@@ -117,7 +117,7 @@ app.get('/cac/delete',function(req,res){
     key = objectQuery.key;
     delete_server(sid,login,key,function(err){
         console.log('SID:' + sid +' 已发送删除命令');
-        return res.jsonp({ err_code: 1, status: 0, msg: ' 已发送删除命令' }
+        return res.jsonp({ err_code: 1, status: 0, msg: ' 已发送删除命令' })
     });
 });
 
