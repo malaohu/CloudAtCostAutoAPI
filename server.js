@@ -108,7 +108,9 @@ app.get('/cac/delete',function(req,res){
     sid = objectQuery.sid;
     login = objectQuery.login;
     key = objectQuery.key;
-
-
-
 });
+
+app.get('/',function(req,res){
+    res.sendfile('index.html');
+})
+
