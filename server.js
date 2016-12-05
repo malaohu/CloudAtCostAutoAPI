@@ -42,7 +42,7 @@ function check_ping(ip, callback) {
 }
 
 function is_server_finish(key, login, sid, callback) {
-    request.get(all_server_url + "?login=" + login + "&key=" + key, function (err, res, body) {
+    request.get(allserver_url + "?login=" + login + "&key=" + key, function (err, res, body) {
 	    if (!err && res.statusCode == 200) {
             var info = JSON.parse(body);
 	        for (var i in info.data) {
