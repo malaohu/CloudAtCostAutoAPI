@@ -20,8 +20,13 @@ function stop_server(key, login, sid, callback) {
     request.post({ url: restart_url, form: { key: key, login: login, sid: sid,action:'poweroff' } },
         function (err, res, body) {
             if (!err && res.statusCode == 200) {
-                var info = JSON.parse(body);
-                return callback(null, info.status == 'ok');
+                try
+                {
+                    var info = JSON.parse(body);
+                    return callback(null, info.status == 'ok');
+                }catch(e){
+                    return callback('未知错误', !1);
+                }
             }
             callback(err);
         })
