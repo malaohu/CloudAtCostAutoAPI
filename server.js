@@ -94,13 +94,15 @@ app.get("/cac/check", function (req, res) {
             check_ping(ip, function (err, isok) {
                     if (isok){
                         console.log('SID:' + sid + ' IP:' + ip +' 服务器网络通了');
-                        success_ip(new Date().toLocaleString() + ' ::: ' + IP + '成功PING通');
-                        return res.jsonp({ err_code: 0, status: 1, msg: '服务器网络已经好了,访问:http://ping.chinaz.com/'+ ip + '查看'  });
+                        //success_ip(new Date().toLocaleString() + ' ::: ' + IP + '成功PING通');
+                        res.jsonp({ err_code: 0, status: 1, msg: '服务器网络已经好了,访问:http://ping.chinaz.com/'+ ip + '查看'  });
+                        return;
                     }
                     else{
                         stop_server(key, login, sid, function () {
                                 console.log('SID:' + sid + ' IP:' + ip +' 服务器重启成功，但是网络不通，已发送关机命令');
-                                return res.jsonp({ err_code: 1, status: 0, msg: '服务器重启成功，但是网络不通，已发送关机命令' }
+                                res.jsonp({ err_code: 1, status: 0, msg: '服务器重启成功，但是网络不通，已发送关机命令' };
+                                return;
                             );
     			        });
                     }
