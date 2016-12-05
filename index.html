@@ -4,26 +4,28 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Build on top of Pure.">
-
-    <title>cloudatcost Pending Server Delete</title>
+    <meta name="description" content="CloudAtCost接口调用,删除,重启">
+    <title>CloudAtCost接口调用</title>
     <link rel="stylesheet" href="https://fonts.lug.ustc.edu.cn/css?family=Raleway:200">
-    <link href="//cdn.bootcss.com/pure/0.6.0/pure-min.css" rel="stylesheet" />
+    <link href="http://cdn.bootcss.com/pure/0.6.0/pure-min.css" rel="stylesheet" />
     <link href="http://static.demo.ruyo.net/html/css.css" rel="stylesheet" />
 </head>
 <body>
 
     <div id="main">
         <div class="header">
-            <h2>CloudAtCost 自动重启服务器</h2>
+            <h2>CloudAtCost接口调用</h2>
         </div>
         <div class="content">
             <p>
-                该脚本调用CloudAtCost官方API接口执行操作。不存在泄露的问题。更多内容：<a href="http://51.ruyo.net/p/1735.html">http://51.ruyo.net/p/1735.html</a>
+                该脚本调用CloudAtCost官方API接口执行操作。
+                机器网络通了以后，请将IP白名单删除，重新生成一个API KEY。
+                更多内容：<a href="http://51.ruyo.net/p/1735.html">http://51.ruyo.net/p/1735.html</a>
             </p>
-            <form class="pure-form pure-form-stacked" method="post" action="https://panel.cloudatcost.com/api/v1/cloudpro/delete.php" enctype="multipart/form-data">
+     
+            <div class="pure-form pure-form-stacked" method="post" action="https://panel.cloudatcost.com/api/v1/cloudpro/delete.php" enctype="multipart/form-data">
                 <fieldset>
-                    <legend>API调用参数</legend>
+                    <legend>API调用参数（请先参考下文，参数的获取方式）</legend>
 
                     <div class="pure-g">
                         <div class="pure-u-1 pure-u-md-1-3">
@@ -41,32 +43,32 @@
                             <input id="sid" name="sid" class="pure-u-23-24" type="text" required placeholder="请仔细阅读下文，怎么获取SERVER ID">
                         </div>
                     </div>
+					<br>
+                    <button type="button" id="start" class="pure-button pure-button-primary">反复重启,直到IP能PING通</button>
+					<button type="button" id="delete" class="pure-button pure-button-primary">删除机器</button>
 
-                    <button type="submit" class="pure-button pure-button-primary">调用执行</button>
                     <br>
-                </fieldset>
-            </form>
-            <h2>确定你本地的外网IP</h2>
-            <p>
-                首先确定你本机的IP。<br>
-                http://pv.sohu.com/cityjson<br>
-                http://1212.ip138.com/ic.asp<br>
-                http://whois.pconline.com.cn/<br>
-                国内好多小的宽带商无固定外网IP,网络情况很复杂!!
+                    <p>实时日志</p>
+                    <textarea id="result" class="pure-u-23-24" style="font-size:10px;height:200px;" readonly></textarea>
+					       <p>
+                【反复重启】每1分钟调用一次，IP能PING通后会自动停止。多台实例请多开几个网页即可。关闭网页立即停止。
             </p>
-
-            <h2>登录系统设置</h2>
+							       <p>
+                【删除机器】某些长期处于Pending状态的机器，直接删除。
+            </p>
+                </fieldset>
+            </div>
+            <h2>创建KEY，添加IP白名单</h2>
             <p>
-                Setting -> 创建API KEY ->  API ACCECC IP 填写你本地的外网IP -> 点击UPDATE。
+                Setting -> 创建API KEY ->  API ACCECC IP 填写 <b>64.137.170.40</b> -> 点击UPDATE
             </p>
             <img src="http://ww2.sinaimg.cn/large/699c2d0fjw1fa8yvw7x8yj20p40joae1.jpg" />
 
             <h2>查看Server ID</h2>
             <p>
-                打开主页，将处于Pedding机器 [i]图标处，鼠标右键 -> [检查] ->在控制台中可见Server ID。
-                如图 Server ID 是 254795732
+                打开主页，单击服务器 [i]图标处，可见Server ID
             </p>
-            <img src="http://ww4.sinaimg.cn/large/699c2d0fjw1fa8yvwh357j20sv0jtqc7.jpg" />
+            <img src="http://ww3.sinaimg.cn/mw690/699c2d0fgw1facke82rc0j20p206y76f.jpg" />
         </div>
 
 
@@ -94,14 +96,56 @@
 
         </div>
     </div>
+    <script src="http://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script>
+        var doing = 0;
+        var key, login, sid;
+        $(function () {
+            $("#start").click(function () {
+                if (doing)
+                    return;
+                key = $("#key").val();
+                login = $("#login").val();
+                sid = $("#sid").val();
+                if (!key || !login || !sid)
+                {
+                    alert('请输入API KEY、邮箱、ServerID');
+                    return;
+                }
+                doing = 1
+                $("#start").addClass("pure-button-disabled");
+                doit();
+
+            });
+
+			$("#delete").click(function(){
+				if(window.confirm('确定要删除这台机器么?'))
+				{
+					alert('删除');
+				}
+			});
 
 
 
+        });
 
+        function doit() {
+            var url = "http://64.137.170.40:18080/cac/check?key=" + key + "&login=" + login + "&sid=" + sid + "&callback=?";
+            $.ajax({
+                url: url,
+                dataType: "jsonp",
+                success: function (data) {
+                    console.log(data);
+                    $("#result").text(new Date().toLocaleString() + '    ' + JSON.stringify(data) + '\r\n' + $("#result").text());
 
+                    if (data.status != 1)
+                        setTimeout(doit, 60000);
+                    else
+                        alert('服务器可以使用了.');
+                }
+            });
+        }
 
-
-
-
+    </script>
 </body>
 </html>
