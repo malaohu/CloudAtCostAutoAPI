@@ -65,6 +65,11 @@ function delete_server(key,login,sid,callback){
 	});
 }
 
+function success_ip(msg){
+    fs.appendFile('./log.txt',msg,'utf8',function(err){  
+        if(err){console.log(err);}});  
+}
+
 app.get("/cac/check", function (req, res) {
     var objectUrl = url.parse(req.url);
     var objectQuery = querystring.parse(objectUrl.query);
@@ -82,9 +87,11 @@ app.get("/cac/check", function (req, res) {
     	        return;
     	    }
             check_ping(ip, function (err, isok) {
-                    if (isok)
+                    if (isok){
                         console.log('SID:' + sid + ' IP:' + ip +' 服务器网络通了');
                         res.jsonp({ err_code: 0, status: 1, msg: '服务器网络已经好了,访问:http://ping.chinaz.com/'+ ip + '查看'  });
+                        success_ip(new Date().toLocaleString() + ' ::: ' + IP + '成功PING通');
+                    }
                     else{
                         stop_server(key, login, sid, function () {
                                 console.log('SID:' + sid + ' IP:' + ip +' 服务器重启成功，但是网络不通，已发送关机命令');
@@ -108,6 +115,10 @@ app.get('/cac/delete',function(req,res){
     sid = objectQuery.sid;
     login = objectQuery.login;
     key = objectQuery.key;
+    delete_server(sid,login,key,function(err){
+        console.log('SID:' + sid +' 已发送删除命令');
+        return res.jsonp({ err_code: 1, status: 0, msg: ' 已发送删除命令' }
+    });
 });
 
 app.get('/',function(req,res){
