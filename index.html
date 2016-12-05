@@ -1,0 +1,107 @@
+﻿
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Build on top of Pure.">
+
+    <title>cloudatcost Pending Server Delete</title>
+    <link rel="stylesheet" href="https://fonts.lug.ustc.edu.cn/css?family=Raleway:200">
+    <link href="//cdn.bootcss.com/pure/0.6.0/pure-min.css" rel="stylesheet" />
+    <link href="http://static.demo.ruyo.net/html/css.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div id="main">
+        <div class="header">
+            <h2>CloudAtCost 自动重启服务器</h2>
+        </div>
+        <div class="content">
+            <p>
+                该脚本调用CloudAtCost官方API接口执行操作。不存在泄露的问题。更多内容：<a href="http://51.ruyo.net/p/1735.html">http://51.ruyo.net/p/1735.html</a>
+            </p>
+            <form class="pure-form pure-form-stacked" method="post" action="https://panel.cloudatcost.com/api/v1/cloudpro/delete.php" enctype="multipart/form-data">
+                <fieldset>
+                    <legend>API调用参数</legend>
+
+                    <div class="pure-g">
+                        <div class="pure-u-1 pure-u-md-1-3">
+                            <label for="key">API KEY</label>
+                            <input id="key" name="key" class="pure-u-23-24" type="text" required placeholder="请仔细阅读下文，怎么获取API KEY">
+                        </div>
+
+                        <div class="pure-u-1 pure-u-md-1-3">
+                            <label for="login">邮箱</label>
+                            <input id="login" name="login" class="pure-u-23-24" type="email" required placeholder="登录邮箱">
+                        </div>
+
+                        <div class="pure-u-1 pure-u-md-1-3">
+                            <label for="sid">SERVERID</label>
+                            <input id="sid" name="sid" class="pure-u-23-24" type="text" required placeholder="请仔细阅读下文，怎么获取SERVER ID">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="pure-button pure-button-primary">调用执行</button>
+                    <br>
+                </fieldset>
+            </form>
+            <h2>确定你本地的外网IP</h2>
+            <p>
+                首先确定你本机的IP。<br>
+                http://pv.sohu.com/cityjson<br>
+                http://1212.ip138.com/ic.asp<br>
+                http://whois.pconline.com.cn/<br>
+                国内好多小的宽带商无固定外网IP,网络情况很复杂!!
+            </p>
+
+            <h2>登录系统设置</h2>
+            <p>
+                Setting -> 创建API KEY ->  API ACCECC IP 填写你本地的外网IP -> 点击UPDATE。
+            </p>
+            <img src="http://ww2.sinaimg.cn/large/699c2d0fjw1fa8yvw7x8yj20p40joae1.jpg" />
+
+            <h2>查看Server ID</h2>
+            <p>
+                打开主页，将处于Pedding机器 [i]图标处，鼠标右键 -> [检查] ->在控制台中可见Server ID。
+                如图 Server ID 是 254795732
+            </p>
+            <img src="http://ww4.sinaimg.cn/large/699c2d0fjw1fa8yvwh357j20sv0jtqc7.jpg" />
+        </div>
+
+
+        <div class="footer">
+            <div class="legal pure-g">
+                <div class="pure-u-1 u-sm-1-2">
+                    <p class="legal-license">
+                        技术支持: <a href="http://51.ruyo.net">如有乐享</a>
+                        <br>
+                        This site is built with &lt;3 using Pure v0.6.0
+                    </p>
+                </div>
+
+                <div class="pure-u-1 u-sm-1-2">
+                    <ul class="legal-links">
+                        <li><a href="https://github.com/woshixiaomajia/pac">Github</a></li>
+                        <li><a href="http://jike.info">Blog</a></li>
+                    </ul>
+
+                    <p class="legal-copyright">
+                        © 2016 JIKE.INFO! Inc. All rights reserved.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+</body>
+</html>

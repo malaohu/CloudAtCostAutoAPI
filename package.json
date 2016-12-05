@@ -1,0 +1,13 @@
+{
+  "name": "cloudatcost-auto-restart",
+  "version": "1.0.0",
+  "author": "Tua",
+  "description": "",
+  "dependencies": {
+    "express": "4.*",
+    "request": "*",
+    "body-parser": "*",
+    "querystring": "*",
+    "ping": "*"
+  }
+}
