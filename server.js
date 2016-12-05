@@ -101,9 +101,8 @@ app.get("/cac/check", function (req, res) {
                     else{
                         stop_server(key, login, sid, function () {
                                 console.log('SID:' + sid + ' IP:' + ip +' 服务器重启成功，但是网络不通，已发送关机命令');
-                                res.jsonp({ err_code: 1, status: 0, msg: '服务器重启成功，但是网络不通，已发送关机命令' };
+                                res.jsonp({ err_code: 1, status: 0, msg: '服务器重启成功，但是网络不通，已发送关机命令' });
                                 return;
-                            );
     			        });
                     }
                 })
