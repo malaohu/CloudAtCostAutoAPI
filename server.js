@@ -13,9 +13,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 var restart_url = 'https://panel.cloudatcost.com/api/v1/powerop.php';
 var delete_url = 'https://panel.cloudatcost.com/api/v1/delete.php';
 var allserver_url = 'https://panel.cloudatcost.com/api/v1/listservers.php';
+var change_mode_url = 'https://panel.cloudatcost.com/api/v1/runmode.php';
+
 
 app.listen(18080);
 
+//关闭服务器
 function stop_server(key, login, sid, callback) {
     request.post({ url: restart_url, form: { key: key, login: login, sid: sid,action:'poweroff' } },
         function (err, res, body) {
@@ -32,6 +35,7 @@ function stop_server(key, login, sid, callback) {
         })
 }
 
+//启动服务器
 function start_server(key, login, sid, callback){
 	request.post({ url: restart_url, form: { key: key, login: login, sid: sid,action:'poweron' }},function(err, res, body){
 		var info = JSON.parse(body);
@@ -40,15 +44,33 @@ function start_server(key, login, sid, callback){
 	});
 }
 
+//PING IP
 function check_ping(ip, callback) {
     ping.sys.probe(ip, function (isAlive) {
         return callback(null, isAlive)
     });
 }
 
+//修改运行模式为普通
+function change_mode(key,login,sid,callback){
+	request.post({ url: change_mode_url, form: { key: key, login: login, sid: sid,mode:'normal' }},function(err, res, body){
+		try{
+            var info = JSON.parse(body);
+            if(info.status === 'ok')
+                return callback(null, info.status == 'ok');
+            else
+                return callback(info.status == 'ok');
+        }catch(e)
+        {
+            return callback(e,null);
+        }
+	});
+}
+
 function is_server_finish(key, login, sid, callback) {
     request.get(allserver_url + "?login=" + login + "&key=" + key, function (err, res, body) {
-	    if (!err && res.statusCode == 200) {
+        console.log(body);
+        if (!err && res.statusCode == 200) {
             try
             {
                 var info = JSON.parse(body);
