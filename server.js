@@ -85,13 +85,13 @@ function check_all_servers(login,key, callback){
             async.each(info.data,function(server,cb){
                 if(server.status == "Powered Off")
                 {
-                    off.append({sid:server.id,ip:server.ip,status:server.status});
+                    off.push({sid:server.id,ip:server.ip,status:server.status});
                     cb(null);
                 }else if(server.status == "Powered On")
                 {
                     check_ping(server.ip,function (err, isok){
                         if(err || !isok)
-                            uping.append({sid:server.id,ip:server.ip,status:'ping error'});
+                            uping.push({sid:server.id,ip:server.ip,status:'ping error'});
                         cb(null)
                     });
                 }
