@@ -49,13 +49,19 @@ function check_ping(ip, callback) {
 function is_server_finish(key, login, sid, callback) {
     request.get(allserver_url + "?login=" + login + "&key=" + key, function (err, res, body) {
 	    if (!err && res.statusCode == 200) {
-            var info = JSON.parse(body);
-	        for (var i in info.data) {
-	    	    var server = info.data[i];
-	    	    if (server.sid == sid){
-                    callback(null, server.status == "Powered On" ? 1 : server.status == "Powered Off" ? 2 : 0, server.ip);
-	    	        return;
-	    	    }
+            try
+            {
+                var info = JSON.parse(body);
+	            for (var i in info.data) {
+	    	        var server = info.data[i];
+	    	        if (server.sid == sid){
+                        callback(null, server.status == "Powered On" ? 1 : server.status == "Powered Off" ? 2 : 0, server.ip);
+	    	            return;
+	    	        }
+                }
+            }catch(e)
+            {
+                console.log(e);
             }
             callback('can not find server sid = ' + sid, !!0);
         }else
