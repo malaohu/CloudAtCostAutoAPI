@@ -5,6 +5,7 @@ var fs = require('fs');
 var url = require("url");
 var querystring = require("querystring");
 var ping = require("ping");
+var async = require("async");
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -67,6 +68,41 @@ function change_mode(key,login,sid,callback){
 	});
 }
 
+function check_all_servers(login,key, callback){
+    request.get(allserver_url + "?login=" + login + "&key=" + key, function (err, res, body) {
+        console.log(body);
+        if (!err && res.statusCode == 200) {
+            try
+            {
+                var info = JSON.parse(body);
+                var arr = [];
+                var off = [];
+                var uping = [];
+                async.each(info.data,function(server,cb){
+                    if(server.status == "Powered Off")
+                    {
+                        off.append({sid:server.id,ip:server.ip,status:server.status});
+                        cb(null);
+                    }else if(server.status == "Powered On")
+                    {
+                        check_ping(server.ip,function (err, isok){
+                            if(err || !isok)
+                                uping.append({sid:server.id,ip:server.ip,status:'ping error'});
+                            cb(null)
+                        });
+                    }
+                    cb(null);
+                }
+            }catch(e)
+            {
+                console.log(e);
+                return cb('error : ' + e,null);
+            }
+    },function(err) {
+        callback(err,{pownoff:off,unping:uping})
+    })
+}
+
 function is_server_finish(key, login, sid, callback) {
     request.get(allserver_url + "?login=" + login + "&key=" + key, function (err, res, body) {
         console.log(body);
@@ -85,11 +121,12 @@ function is_server_finish(key, login, sid, callback) {
             {
                 console.log(e);
             }
-            callback('can not find server sid = ' + sid, !!0);
+            return callback('can not find server sid = ' + sid, !!0);
         }else
-	        callback(err);
+	        return callback(err);
         });
 }
+
 
 function delete_server(key,login,sid,callback){
 	request.post({ url: delete_url, form: { key: key, login: login, sid: sid}},function(err, res, body){
@@ -154,6 +191,17 @@ app.get('/cac/delete',function(req,res){
         return res.jsonp({ err_code: 1, status: 0, msg: ' 已发送删除命令' })
     });
 });
+
+app.get('/cac/checkall',function(req,res){
+    var objectUrl = url.parse(req.url);
+    var objectQuery = querystring.parse(objectUrl.query);
+    sid = objectQuery.sid;
+    login = objectQuery.login;
+    key = objectQuery.key;
+    check_all_servers(login,key,function(err,msg){
+        return res.jsonp({ err_code: 0, status: 0, msg:msg })
+    });
+})
 
 app.get('/',function(req,res){
     res.sendfile('index.html');
