@@ -94,8 +94,8 @@ function check_all_servers(login,key, callback){
                             uping.push({sid:server.id,ip:server.ip,status:'ping error'});
                         cb(null)
                     });
-                }
-                cb(null);
+                }else
+                    cb(null);
             },function(err) {
                 callback(err,{pownoff:off,unping:uping})
             });
