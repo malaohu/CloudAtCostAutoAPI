@@ -46,15 +46,18 @@
 					<br>
                     <button type="button" id="start" class="pure-button pure-button-primary">反复重启,直到IP能PING通</button>
 					<button type="button" id="delete" class="pure-button pure-button-primary">删除机器</button>
-
+					<button type="button" id="check" class="pure-button pure-button-primary">一键检查所有异常机器</button>
                     <br>
                     <p>实时日志</p>
-                    <textarea id="result" class="pure-u-23-24" style="font-size:10px;height:200px;" readonly></textarea>
+                    <textarea id="result" class="pure-u-23-24" style="font-size:10px;height:300px;" readonly></textarea>
 					       <p>
                 【反复重启】每1分钟调用一次，IP能PING通后会自动停止。多台实例请多开几个网页即可。关闭网页立即停止。
             </p>
 							       <p>
                 【删除机器】某些长期处于Pending状态的机器，直接删除。
+            </p>
+							       <p>
+                【一键检查所有异常机器】关机以及无法PING通批量检查。
             </p>
                 </fieldset>
             </div>
@@ -121,11 +124,25 @@
 			$("#delete").click(function(){
 				if(window.confirm('确定要删除这台机器么?'))
 				{
-					alert('删除');
+					alert('该接口暂时没有对接');
 				}
 			});
 
-
+			$("#check").click(function(){
+				if(doing)
+					return;
+				key = $("#key").val();
+                login = $("#login").val();
+                sid = $("#sid").val();
+                if (!key || !login || !sid)
+                {
+                    alert('请输入API KEY、邮箱、ServerID');
+                    return;
+                }
+				doing = 1;
+				$("#check").addClass("pure-button-disabled");
+				check_servers();
+			});
 
         });
 
@@ -140,11 +157,29 @@
 
                     if (data.status != 1)
                         setTimeout(doit, 60000);
-                    else
+                    else{
                         alert('服务器可以使用了.');
+						$("#start").removeClass("pure-button-disabled");
+						doing = 0;
+					}
                 }
             });
         }
+
+		function check_servers(){
+			var url = "http://64.137.170.40:18080/cac/checkall?key=" + key + "&login=" + login + "&sid=" + sid + "&callback=?";
+				$.ajax({
+					url: url,
+					dataType: "jsonp",
+					success: function (data) {
+						console.log(data);
+						$("#result").text(JSON.stringify(data));
+						$("#check").removeClass("pure-button-disabled");
+						doing = 0;
+					}
+				});
+		
+		}
 
     </script>
 </body>
