@@ -73,34 +73,36 @@ function check_all_servers(login,key, callback){
         console.log(body);
         if (!err && res.statusCode == 200) {
             var info;
-            try
-            {
+            try{
                 info = JSON.parse(body);
-            }catch(e)
-            {
+            }catch(e){
                 console.log(e);
                 return cb('error : ' + e,null);
             }
-        var arr = [];
-        var off = [];
-        var uping = [];
-        async.each(info.data,function(server,cb){
-            if(server.status == "Powered Off")
-            {
-                off.append({sid:server.id,ip:server.ip,status:server.status});
+            var arr = [];
+            var off = [];
+            var uping = [];
+            async.each(info.data,function(server,cb){
+                if(server.status == "Powered Off")
+                {
+                    off.append({sid:server.id,ip:server.ip,status:server.status});
+                    cb(null);
+                }else if(server.status == "Powered On")
+                {
+                    check_ping(server.ip,function (err, isok){
+                        if(err || !isok)
+                            uping.append({sid:server.id,ip:server.ip,status:'ping error'});
+                        cb(null)
+                    });
+                }
                 cb(null);
-            }else if(server.status == "Powered On")
-            {
-              check_ping(server.ip,function (err, isok){
-                  if(err || !isok)
-                      uping.append({sid:server.id,ip:server.ip,status:'ping error'});
-                  cb(null)
-              });
-            }
-            cb(null);
-        },function(err) {
-            callback(err,{pownoff:off,unping:uping})
-        });
+            },function(err) {
+                callback(err,{pownoff:off,unping:uping})
+            });
+        }else
+            callback('cac api request error',null);
+    });
+
 }
 
 function is_server_finish(key, login, sid, callback) {
